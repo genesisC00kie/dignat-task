@@ -1,0 +1,11 @@
+code the validation
+upload to github
+
+
+
+for all:
+
+make a function where after is validated a variable is set to true. after all are true make the submit button usable.
+
+
+make valid details send to an email address.

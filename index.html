@@ -1,0 +1,457 @@
+<head>  
+    <title>
+        digitalnative/details
+    </title>
+</head>
+<style>
+    input {
+        margin-left: auto;
+        margin-right: auto;
+        margin-top: 100px;
+    }
+    form{display: table;}
+    label{display: table-cell; text-align: right; font-size: 60px} 
+    .userinput{display: table-cell; height: 60px; font-size: 60px;}
+    .row{display: table-row;}
+
+    </style>
+<body>  
+
+    <form id="detailForm"  style="
+    border-radius: 100px;
+    background-color: #89c82e;
+    border: 10px solid #3c3c3b;
+    padding: 20px;
+    height: 95%;
+    width: 95%;
+    margin-left: auto;
+    margin-right: auto;
+    font-family: Calibri;
+    display: table;">
+        <!-- allows the creation of input text boxes -->
+
+        <h2 style="text-align: center;
+        font-size: 80px ;">Please enter your details:</h2>
+        <div style="
+        width: 90%;
+        position: absolute;
+        top:50%;
+        left: 50%;
+        -ms-transform: translate(-50%, -50%);
+        transform: translate(-50%, -50%);
+        ">
+
+        <p class="row">
+        <label for="name">Name:</label>
+        <input type="text" 
+        class="userInput"
+        id="name" 
+        name="name" 
+        size="40%"
+        onkeypress="return validName(event)"
+        onblur="validateName()"
+        placeholder="Please enter your name"
+        ></p>
+
+        <p class="row">
+        <label for="email">Email:</label>
+        <input type="text"
+        class="userInput"
+        id="email"
+        name="email"
+        size="40%"
+        onkeypress="return validEmail(event)"
+        onblur="validateEmail()"
+        placeholder="Please enter your email address
+        "></p>
+
+        <p class="row">
+        <label for="creditCard">Credit Card:</label>
+        <input type="text"
+        class="userInput"
+        id="creditCard"
+        name="creditCard"
+        size="40%"
+        maxlength="16"
+        onkeypress="return onlyNumbers(event)"
+        onblur="validateCard()"
+        placeholder="Please enter your credit card number"
+        ><br>
+        <div style="text-align: center;">
+        <input type="submit" 
+        value="Submit" 
+        class="input"
+        style=" border-radius: 5px;
+        background-color: #e70064;
+        font-size: 50px;
+        ">  
+        </div>
+        </div>
+    </form>
+</body>
+<script>
+    function validName(evt) {
+        var keyASCII = (evt.which) ? evt.which : evt.keyCode
+        console.log(keyASCII)
+        if (keyASCII < 31 || ((keyASCII>47 && keyASCII<61) || keyASCII==(64 || 62 || 34 || 44 || 46  ) || (keyASCII>90 && keyASCII<94) || keyASCII > 126)){// allows specified characters to be entered
+            console.log("false")
+            return false
+        }return true
+    }
+    function validEmail(e) {
+        var keyASCII = (e.which) ? e.which : e.keyCode
+        console.log(keyASCII)
+        if (keyASCII < 31 || ((keyASCII>57 && keyASCII<61) || keyASCII==( 62 || 34 || 44   ) || (keyASCII>90 && keyASCII<94) || keyASCII > 126)){// allows specified and appropriate characters to be entered
+
+            console.log("false")
+            return false
+        }return true
+    }
+
+
+    function onlyNumbers(ev) {
+        var keyASCII = (ev.which) ? ev.which : ev.keyCode
+        if (keyASCII > 31 && (keyASCII < 48 || keyASCII > 57)){// allows numbers to be entered
+            return false
+        }return true
+    
+    }
+//validating Name
+    function validateName(){
+        var space = null
+        var secondCap = null
+        var invalid = false
+        var ID = "name"
+        var nameValue = document.getElementById("name").value
+        var len = nameValue.length;
+        if ((nameValue[0].charCodeAt(0)>64) && nameValue[0].charCodeAt(0)<91){// checks if first letter is a capital
+            console.log(nameValue[0])
+            console.log(nameValue[0].charCodeAt(0))
+            for(let x=1; x < len; x++){
+                // console.log(nameValue[x])
+                // console.log(nameValue[x].charCodeAt(0))
+                if((nameValue[x].charCodeAt(0) == 32)){// checks for a space through the iterations
+                    
+                    if (space == true){
+                        var invalid = true // no more than one space between first and last name
+                        console.log("space")
+                        
+                        validColour(ID,invalid)
+                        break
+                    }
+                    else{space = true
+                        if(len != x+1){
+                        if ((nameValue[x+1].charCodeAt(0) < 65) || nameValue[x+1].charCodeAt(0) >90){// checks for if the letter after the space (first last name letter) is also a capital
+                            console.log(nameValue[x+1])
+                            
+                            var invalid = true
+                            console.log("badCap")
+                            
+                            validColour(ID,invalid)
+                            
+                            break
+                        }
+                        secondCap = true
+                        x++}
+                        else{
+                            var invalid = true
+                            console.log("badCap")
+                            
+                            validColour(ID,invalid)
+                            
+                            break
+}
+                    } 
+                    
+                }
+                else if((nameValue[x].charCodeAt(0)<97) || nameValue[x].charCodeAt(0)>122){//checks if every other character is a lower case letter
+                    if((nameValue[x].charCodeAt(0)!=45) || nameValue[x].charCodeAt(0)!=39){// makes exception for hyphen and apostrophy
+                        var invalid = true
+                            console.log("lowercase")
+                            validColour(ID,invalid)
+                            break}
+                }
+
+            }
+            if (space!= true && secondCap != true){
+                invalid = true
+            }
+            validColour(ID,invalid)
+        }
+        else{
+            invalid = true
+                          
+            validColour(ID,invalid)
+        }
+    }
+//validating Card
+    function validateCard(){
+        var invalid = false
+        var ID = "creditCard"
+        var cardValue = document.getElementById("creditCard").value
+        if(cardValue.length < 13)
+        {console.log("invalid")
+            invalid = true
+            validColour(ID,invalid)
+        return}
+        //visa, american express and master card are most commonly used so validation for these will be done
+        //starting with mastercard
+        //either first 2 digits range from 51-55 or first 4 digits range from 2221-2720
+        if((cardValue[0]+cardValue[1] >50 && cardValue[0]+cardValue[1]<56) || (cardValue[0]+cardValue[1]+cardValue[2]+cardValue[3] >2220 && cardValue[0]+cardValue[1]+cardValue[2]+cardValue[3]<2721)){
+            console.log("mastercard")
+            //testdata 5431111111111111
+            if(cardValue.length!=16){
+                invalid = true
+                validColour(ID,invalid)
+                return
+            }
+            else{
+                var digit = 0//my version of the luhn algorithm
+                var newValues = []
+                for(y=cardValue.length - 1; y > -1 ; y-- ){
+                    
+                    digit++
+                    if(digit % 2 == 0){
+                        
+                        temp = Number(cardValue[y]) *2
+                        console.log(temp)
+                        if(temp>9){
+                            temp = temp.toString()
+                            console.log(temp[0])
+                            console.log(temp[1])
+                            newValues[y] = (Number(temp[0]) + Number(temp[1]))
+                            
+                        }else{
+                            newValues[y] = temp.toString()
+                            
+                        }
+                    }else{
+                        newValues[y] = cardValue[y]
+                    }
+                
+                }
+                total = null
+                for(let z = 0; z<newValues.length ; z++){
+                    
+                    total = total + Number(newValues[z])
+                }
+                if(total % 10 != 0){
+                    invalid = true
+                    validColour(ID,invalid)
+                    return
+
+                }
+                else{
+                    console.log("valid mastercard")
+                    validColour(ID,invalid)
+                    return
+                }
+            }
+        }
+        //next visa
+        //card number must start with 4
+        else if (cardValue[0] == 4){
+            console.log("visa")
+
+            if(cardValue.length!=16 && cardValue.length!=13 ){
+                invalid = true
+                validColour(ID,invalid)
+                return
+            }
+            else{
+                var digit = 0//my version of the luhn algorithm
+                var newValues = []
+                for(y=cardValue.length - 1; y > -1 ; y-- ){
+                    
+                    digit++
+                    if(digit % 2 == 0){
+                        
+                        temp = Number(cardValue[y]) *2
+                        console.log(temp)
+                        if(temp>9){
+                            temp = temp.toString()
+                            console.log(temp[0])
+                            console.log(temp[1])
+                            newValues[y] = (Number(temp[0]) + Number(temp[1]))
+                            
+                        }else{
+                            newValues[y] = temp.toString()
+                            
+                        }
+                    }else{
+                        newValues[y] = cardValue[y]
+                    }
+                
+                }
+                total = null
+                for(let z = 0; z<newValues.length ; z++){
+                    
+                    total = total + Number(newValues[z])
+                    console.log(total)
+                }
+                if(total % 10 != 0){
+                    invalid = true
+                    validColour(ID,invalid)
+                    return
+
+                }
+                else{
+                    console.log("valid visa")
+                    validColour(ID,invalid)
+                    return
+                }
+            }
+        }
+        //finally american express
+        //first 2 digits range from 34-37
+        else if(cardValue[0]+cardValue[1] >33 && cardValue[0]+cardValue[1]<38){
+            console.log("american express")
+
+            if(cardValue.length!=15){
+                invalid = true
+                validColour(ID,invalid)
+                return
+            }
+            else{
+                var digit = 0 //my version of the luhn algorithm
+                var newValues = []
+                for(y=cardValue.length - 1; y > -1 ; y-- ){
+                    
+                    digit++
+                    if(digit % 2 == 0){
+                        
+                        temp = Number(cardValue[y]) *2
+                        console.log(temp)
+                        if(temp>9){
+                            temp = temp.toString()
+                            console.log(temp[0])
+                            console.log(temp[1])
+                            newValues[y] = (Number(temp[0]) + Number(temp[1]))
+                            
+                        }else{
+                            newValues[y] = temp.toString()
+                            
+                        }
+                    }else{
+                        newValues[y] = cardValue[y]
+                    }
+                
+                }
+                total = null
+                for(let z = 0; z<newValues.length ; z++){
+                    
+                    total = total + Number(newValues[z])
+                    console.log(total)
+                }
+                if(total % 10 != 0){
+                    invalid = true
+                    validColour(ID,invalid)
+                    return
+
+                }
+                else{
+                    console.log("valid American Express")
+                    validColour(ID,invalid) 
+                    return
+                }
+            }
+        }
+
+        else{
+            console.log("invalid card")
+            invalid = true
+            validColour(ID,invalid)
+            return
+        }
+    }
+
+
+    function validateEmail(){
+        var invalid = false
+        var ID = "email"
+        var emailValue = document.getElementById("email").value
+        var emailLength = emailValue.length
+        var atInEmail = false
+        var dotInDomain = false
+        for(z=0;z<emailLength;z++){
+            if(emailValue[z] == "@"){
+                atPos = z
+
+                atInEmail = true
+                break
+            }
+        }
+        if(atInEmail == true){
+        for(v=atPos + 1; v< emailLength; v++){
+            if(emailValue[v] == "."){
+                    dotInDomain = true
+                    break
+                    }
+                        }}
+        if (emailValue[0] != "." && emailValue[0] != "@" && emailValue[emailLength-1] != "." && atInEmail == true && dotInDomain == true){
+            for(x=0;x<emailLength;x++){
+                if(emailValue[x] == "." && emailValue[x+1] == "."){
+                    invalid = true
+                    validColour(ID, invalid)
+                    return
+                 }
+                else if(emailValue[x] == "@"){
+                        if(emailValue[x-1] == "." || emailValue[x+1] == "."){
+                        invalid = true
+                    validColour(ID, invalid)
+                    return
+                    }
+                    else if(emailValue[atPos+1] == "-"  || emailValue[emailLength-1] == "-"){
+                        invalid = true
+                        validColour(ID, invalid)
+                        return
+                    }
+                    else if(emailValue[emailLength -1] == "@"){
+                        invalid = true
+                        validColour(ID, invalid)
+                        return
+                    }
+                    else{
+
+                        
+                        for(y=atPos + 1; y< emailLength; y++){
+                            if(emailValue[y] == "." && emailValue[y+1] == "."){
+                        invalid = true
+                        validColour(ID, invalid)
+                        return
+                        }else if(emailValue[y] == "@"){
+                            invalid = true
+                        validColour(ID, invalid)
+                        return
+                        }else{
+                            validColour(ID, invalid)
+                        return
+                        }
+                    }
+                }}
+        } 
+    }else{
+        invalid = true
+        validColour(ID, invalid)
+    }
+    }
+
+    function validColour(ID,invalid){
+        if (invalid == true && ID == "name"){
+            document.getElementById(ID).style.backgroundColor = "#e70064";
+            // alert("Please input your name with correct grammar and appropriate characters. e.g. Correct capitalisation")
+            
+        }
+        else if (invalid == true && ID == "creditCard"){
+            document.getElementById(ID).style.backgroundColor = "#e70064";
+            // alert("Please input a valid Mastercard, Visa or American Express card number")
+        }
+        else if (invalid == true && ID == "email"){
+            document.getElementById(ID).style.backgroundColor = "#e70064";
+            // alert("Please enter a real email address")
+        }else{
+            document.getElementById(ID).style.backgroundColor = "#77B985";// slightly lighter green colour to make field easier to distiguish
+        }
+        return
+    }
+</script>     
