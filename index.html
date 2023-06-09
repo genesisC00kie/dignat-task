@@ -16,8 +16,13 @@
 
     </style>
 <body>  
-
-    <form id="detailForm"  style="
+<!-- form allows an email to be sent if the user has an email client on their device -->
+    <form id="detailForm"  
+    action="mailto:test@dn-uk.com" 
+    method="POST"
+    enctype="text/plain"
+    name="EmailForm"
+    style="
     border-radius: 100px;
     background-color: #89c82e;
     border: 10px solid #3c3c3b;
@@ -47,11 +52,12 @@
         class="userInput"
         id="name" 
         name="name" 
+        title="invalid"
         size="40%"
         onkeypress="return validName(event)"
         onblur="validateName()"
         placeholder="Please enter your name"
-        ></p>
+        ><br></p>
 
         <p class="row">
         <label for="email">Email:</label>
@@ -60,10 +66,11 @@
         id="email"
         name="email"
         size="40%"
+        title="invalid"
         onkeypress="return validEmail(event)"
         onblur="validateEmail()"
         placeholder="Please enter your email address
-        "></p>
+        "><br></p>
 
         <p class="row">
         <label for="creditCard">Credit Card:</label>
@@ -73,6 +80,7 @@
         name="creditCard"
         size="40%"
         maxlength="16"
+        title="invalid"
         onkeypress="return onlyNumbers(event)"
         onblur="validateCard()"
         placeholder="Please enter your credit card number"
@@ -81,6 +89,9 @@
         <input type="submit" 
         value="Submit" 
         class="input"
+        id="submit"
+        disabled= true
+        onclick="return submitValid()"
         style=" border-radius: 5px;
         background-color: #e70064;
         font-size: 50px;
@@ -90,6 +101,13 @@
     </form>
 </body>
 <script>
+
+var input = document.getElementsByClassName("userInput");
+    input.addEventListener("keypress", function(event) {
+  if (event.key === "Enter") {// makes enter class as a click instead of just submitting data
+    event.preventDefault();
+    document.getElementById("submit").click();
+  }}); 
     function validName(evt) {
         var keyASCII = (evt.which) ? evt.which : evt.keyCode
         console.log(keyASCII)
@@ -124,6 +142,11 @@
         var ID = "name"
         var nameValue = document.getElementById("name").value
         var len = nameValue.length;
+        if (nameValue.length<1){// name field cant be empty
+            invalid = true
+            validColour(ID,invalid)
+            return
+        }
         if ((nameValue[0].charCodeAt(0)>64) && nameValue[0].charCodeAt(0)<91){// checks if first letter is a capital
             console.log(nameValue[0])
             console.log(nameValue[0].charCodeAt(0))
@@ -133,7 +156,7 @@
                 if((nameValue[x].charCodeAt(0) == 32)){// checks for a space through the iterations
                     
                     if (space == true){
-                        var invalid = true // no more than one space between first and last name
+                        invalid = true // no more than one space between first and last name
                         console.log("space")
                         
                         validColour(ID,invalid)
@@ -144,7 +167,7 @@
                         if ((nameValue[x+1].charCodeAt(0) < 65) || nameValue[x+1].charCodeAt(0) >90){// checks for if the letter after the space (first last name letter) is also a capital
                             console.log(nameValue[x+1])
                             
-                            var invalid = true
+                            invalid = true
                             console.log("badCap")
                             
                             validColour(ID,invalid)
@@ -189,7 +212,7 @@
         var invalid = false
         var ID = "creditCard"
         var cardValue = document.getElementById("creditCard").value
-        if(cardValue.length < 13)
+        if(cardValue.length < 13)//shortest card length is visa with 13 for older cards
         {console.log("invalid")
             invalid = true
             validColour(ID,invalid)
@@ -374,7 +397,7 @@
         var atInEmail = false
         var dotInDomain = false
         for(z=0;z<emailLength;z++){
-            if(emailValue[z] == "@"){
+            if(emailValue[z] == "@"){// finds an @ in the email
                 atPos = z
 
                 atInEmail = true
@@ -382,31 +405,31 @@
             }
         }
         if(atInEmail == true){
-        for(v=atPos + 1; v< emailLength; v++){
+        for(v=atPos + 1; v< emailLength; v++){//finds a dot in the domain
             if(emailValue[v] == "."){
                     dotInDomain = true
                     break
                     }
                         }}
-        if (emailValue[0] != "." && emailValue[0] != "@" && emailValue[emailLength-1] != "." && atInEmail == true && dotInDomain == true){
-            for(x=0;x<emailLength;x++){
-                if(emailValue[x] == "." && emailValue[x+1] == "."){
+        if (emailValue[0] != "." && emailValue[0] != "@" && emailValue[emailLength-1] != "." && atInEmail == true && dotInDomain == true){// checks if the first value is a dot or @
+            for(x=0;x<emailLength;x++){                                                                                                   // or if the last value is a dot and if there
+                if(emailValue[x] == "." && emailValue[x+1] == "."){// no consecutive dots                                                 // is an @ and dot in the domain
                     invalid = true
                     validColour(ID, invalid)
                     return
                  }
                 else if(emailValue[x] == "@"){
-                        if(emailValue[x-1] == "." || emailValue[x+1] == "."){
+                        if(emailValue[x-1] == "." || emailValue[x+1] == "."){// the charcter before and after the @ cannot be a dot
                         invalid = true
                     validColour(ID, invalid)
                     return
                     }
-                    else if(emailValue[atPos+1] == "-"  || emailValue[emailLength-1] == "-"){
+                    else if(emailValue[atPos+1] == "-"  || emailValue[emailLength-1] == "-"){// the start and end of the domain cannot be a hyphen
                         invalid = true
                         validColour(ID, invalid)
                         return
                     }
-                    else if(emailValue[emailLength -1] == "@"){
+                    else if(emailValue[emailLength -1] == "@"){// the last value cannot be an @
                         invalid = true
                         validColour(ID, invalid)
                         return
@@ -415,11 +438,11 @@
 
                         
                         for(y=atPos + 1; y< emailLength; y++){
-                            if(emailValue[y] == "." && emailValue[y+1] == "."){
+                            if(emailValue[y] == "." && emailValue[y+1] == "."){// no consecutive dots
                         invalid = true
                         validColour(ID, invalid)
                         return
-                        }else if(emailValue[y] == "@"){
+                        }else if(emailValue[y] == "@"){// no more than one @ 
                             invalid = true
                         validColour(ID, invalid)
                         return
@@ -438,20 +461,81 @@
 
     function validColour(ID,invalid){
         if (invalid == true && ID == "name"){
-            document.getElementById(ID).style.backgroundColor = "#e70064";
-            // alert("Please input your name with correct grammar and appropriate characters. e.g. Correct capitalisation")
+            document.getElementById(ID).title = "invalid"
+            document.getElementById(ID).style.backgroundColor = "#e70064";// changes colour to pink
+            document.getElementById(ID).value = null;//deletes contents to display changed placeholder
+            document.getElementById(ID).placeholder = "Please input your name with correct grammar ";
+            disableButton()
+           //alert("Please input your name with correct grammar and appropriate characters. e.g. Correct capitalisation")
             
         }
         else if (invalid == true && ID == "creditCard"){
+            document.getElementById(ID).title = "invalid"
             document.getElementById(ID).style.backgroundColor = "#e70064";
-            // alert("Please input a valid Mastercard, Visa or American Express card number")
+            document.getElementById(ID).value = null;
+            document.getElementById(ID).placeholder = "input a valid Mastercard/ Visa/ American Express ";
+            disableButton()
+           // alert("Please input a valid Mastercard, Visa or American Express card number")
         }
         else if (invalid == true && ID == "email"){
+            document.getElementById(ID).title = "invalid"
             document.getElementById(ID).style.backgroundColor = "#e70064";
-            // alert("Please enter a real email address")
+            document.getElementById(ID).value = null;
+            document.getElementById(ID).placeholder = "Please enter a real email address";
+            disableButton()
+            //alert("Please enter a real email address")
         }else{
             document.getElementById(ID).style.backgroundColor = "#77B985";// slightly lighter green colour to make field easier to distiguish
+
+            if (ID == "name"){
+                document.getElementById(ID).title = "valid" // changes attribute of object to save
+                var validatedName = document.getElementById("name").title
+                var validatedEmail = document.getElementById("email").title
+                var validatedCard = document.getElementById("creditCard").title
+                if(validatedEmail == "valid" && validatedName == "valid" && validatedCard == "valid"){ // checks all fields are valid
+                console.log("enable")
+                enableButton()}
+                else{
+                    return validatedName
+                }
         }
+             else if (ID == "creditCard"){
+                document.getElementById(ID).title = "valid"
+                var validatedName = document.getElementById("name").title
+                var validatedEmail = document.getElementById("email").title
+                var validatedCard = document.getElementById("creditCard").title
+                if(validatedEmail == "valid" && validatedName == "valid" && validatedCard == "valid"){
+                console.log("enable")
+                enableButton()}
+                else{
+                return validatedCard}
+        }
+            else if (ID == "email"){
+                document.getElementById(ID).title = "valid"
+                var validatedName = document.getElementById("name").title
+                var validatedEmail = document.getElementById("email").title
+                var validatedCard = document.getElementById("creditCard").title
+                if(validatedEmail == "valid" && validatedName == "valid" && validatedCard == "valid"){
+                console.log("enable")
+                enableButton()}
+                else{
+                return validatedEmail}
+                
+        }
+        }
+    }
+
+    function validateAll(){
+
+    }
+
+    function enableButton(){
+        console.log("enable")
+        document.getElementById("submit").disabled = false// the button is disabled if a field is invalid
         return
     }
-</script>     
+    function disableButton(){
+        document.getElementById("submit").disabled = true// enables a field if all fields are valid 
+        return
+    }
+</script>
